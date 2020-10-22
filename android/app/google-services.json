@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "533220115916",
+    "firebase_url": "https://records-107c9.firebaseio.com",
+    "project_id": "records-107c9",
+    "storage_bucket": "records-107c9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:533220115916:android:241346261dd1d96429c969",
+        "android_client_info": {
+          "package_name": "com.example.records"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "533220115916-ninbsernj5qp7dont1onvtc9u889i8g6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1UYLFl1ROBn65pgXRAIfH6qW7cKl8Yjg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "533220115916-ninbsernj5qp7dont1onvtc9u889i8g6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
