@@ -186,7 +186,6 @@ void initState() {
           onChanged: (value){
             this.oldPassword = value;
           },
-          
           validator: passwordValidator,
           ),
           ),
