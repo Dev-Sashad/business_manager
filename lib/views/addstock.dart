@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:records/homepage.dart';
 
 
@@ -153,7 +154,7 @@ void _addStockNotSucessful() {
       Container(
         padding: EdgeInsets.symmetric(vertical:10, horizontal: 10),
         width: MediaQuery.of(context).size.width*0.7,
-        height: 40,
+        height: 60,
         decoration: BoxDecoration(
           border: Border.all(
             color: Colors.orangeAccent,
@@ -163,7 +164,7 @@ void _addStockNotSucessful() {
           
         ),
 
-        child: Text( itemQuantity.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize:25,),
+        child: Text( itemQuantity.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize:30,),
         textAlign: TextAlign.center,
       ), 
       ),
@@ -200,9 +201,9 @@ void _addStockNotSucessful() {
      SizedBox(height:30),
 
      Container (
-       padding: EdgeInsets.symmetric(vertical:10),
+        alignment: Alignment.center,
         width: MediaQuery.of(context).size.width*0.7,
-        height: 50,
+        height: 60,
         decoration: BoxDecoration(
           border: Border.all(
             color: Colors.greenAccent,
@@ -218,7 +219,14 @@ void _addStockNotSucessful() {
            
            Container(
              width: MediaQuery.of(context).size.width*0.5,
-             child: TextFormField( 
+             child: TextFormField(
+               style: TextStyle(
+                 fontSize: 30,
+                 fontWeight: FontWeight.bold,
+                fontFamily: 'Montserrat',
+                color: Colors.black,
+               ), 
+          keyboardType: TextInputType.number,
         decoration: buildSignupInputDecoration(actualQuantity.toString(),),
         validator: stockValidator,
         textAlign: TextAlign.center,
@@ -235,7 +243,7 @@ void _addStockNotSucessful() {
 
         SizedBox(width:10),
 
-        InkWell(onTap: (){
+        IconButton(onPressed: (){
 
           if (actualQuantity > 0 && selectedItem!=null){
 
@@ -260,7 +268,7 @@ void _addStockNotSucessful() {
 
         },
                 
-         child: Icon(Icons.subdirectory_arrow_right, color:Colors.greenAccent, size:35,)),
+         icon: Icon(Icons.subdirectory_arrow_right, color:Colors.greenAccent, size:35,)),
          
         ],
       ),)
@@ -379,11 +387,12 @@ void _addStockNotSucessful() {
 return InputDecoration(
      hintText: hint,
      hintStyle: TextStyle( 
-     fontSize: 10,
+     fontSize: 30,
       fontFamily: 'Montserrat',
       color: Colors.grey,
       ),     
-      border: InputBorder.none
+      border: InputBorder.none,
+      contentPadding: const EdgeInsets.symmetric(vertical:5),
       );
 
 }

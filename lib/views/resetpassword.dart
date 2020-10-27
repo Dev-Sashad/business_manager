@@ -57,7 +57,7 @@ void _loadingDialog() {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white10,
           title: new Text(""),
           content: Container(
             height: MediaQuery.of(context).size.height*0.15,
@@ -119,9 +119,11 @@ void _passwordNotSucessfullyChanged() {
             FlatButton(
               child: new Text("Dismiss", style: TextStyle(fontSize:20, color:Colors.white),),
               onPressed: () {             
-               //authFormType = AuthFormType.signIn;
-              Navigator.of(context).pop();
-               // loading=false;
+              
+             Navigator.of(context).pushReplacement(
+    MaterialPageRoute(builder: (BuildContext context)=>ResetPasswordpage())
+  );
+           
               },
             ),
              )
@@ -131,11 +133,11 @@ void _passwordNotSucessfullyChanged() {
     );
   }
 
-Future <void> initState() async {
+void initState() {
 
  userIdentity= FirebaseAuth.instance.currentUser.uid;
      print('$userIdentity');
-   await FirebaseFirestore.instance.collection('users').doc(userIdentity).get().then((value){
+    FirebaseFirestore.instance.collection('users').doc(userIdentity).get().then((value){
       setState(() {
        userDetails = value;
       });
@@ -154,7 +156,14 @@ Future <void> initState() async {
   Widget build(BuildContext context) {
    return Scaffold(
           appBar: AppBar(
+            automaticallyImplyLeading: false,
+        leading: IconButton(icon: Icon(Icons.arrow_back_ios),
         
+         onPressed: (){
+            Navigator.of(context).pushReplacement(
+       MaterialPageRoute(builder: (BuildContext context)=>HomePage())
+        );
+        }),
         backgroundColor: Colors.orangeAccent,
         title: 
           Text('Change Password',textAlign:TextAlign.center, 
@@ -167,7 +176,10 @@ Future <void> initState() async {
           
         Form(key:formKey,
         child: Column(
+       crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+              SizedBox(height:50),
           container(
           TextFormField(decoration: buildSignupInputDecoration('old password'),
           
@@ -192,6 +204,8 @@ Future <void> initState() async {
         ]
         )
         ),
+
+         SizedBox(height:20),
 
             flatbutton(
              FlatButton(onPressed:() {
@@ -231,11 +245,12 @@ Future <void> initState() async {
 return InputDecoration(
      hintText: hint,
      hintStyle: TextStyle( 
-     fontSize: 10,
+     fontSize: 15,
       fontFamily: 'Montserrat',
       color: Colors.grey,
       ),     
-      border: InputBorder.none
+      border: InputBorder.none,
+      contentPadding: const EdgeInsets.only(left:20)
       );
 
 }
@@ -256,6 +271,7 @@ return Container(
 Container flatbutton (FlatButton child){
 return Container(
   margin: EdgeInsets.symmetric(horizontal:20),
+  width: MediaQuery.of(context).size.width*0.6,
                 child: Material(
                   borderRadius: BorderRadius.circular(5),
                   shadowColor: Colors.grey,

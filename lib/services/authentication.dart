@@ -24,15 +24,14 @@ abstract class BaseAuth {
   
    @override
   Future<UserCredential> signIn(String email, String password) async {
-    return await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
-    
+    return await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);   
   }
 
 
    @override
 
   Future<UserCredential> signUp(String email, String password) async {
-    return await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+  return  await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
   }
 
    @override

@@ -35,29 +35,26 @@ class MainPage extends StatefulWidget {
 }
 
 
-
 class _MainPageState extends State<MainPage> {
   
   @override
   void initState() {
     checkSession().then((value){
     if  (value){
-      FirebaseAuth.instance.authStateChanges().listen((User user) async {
-        if(user != null){
-        if (!user.emailVerified) {
-              FirebaseAuth.instance.signOut();
-      _navigatetoLogin();              
+          User user = FirebaseAuth.instance.currentUser;
+        if(user != null && user.emailVerified ){
+                _navigatetoHome();              
             } 
 
-    else {
-        _navigatetoHome(); 
-    }}
+    else if (user != null && !user.emailVerified ) {
+         FirebaseAuth.instance.signOut();
+      _navigatetoLogin();
+    }
 
 
     else{
       _navigatetoLogin();
     }
-      });
       
     }
     }
@@ -100,19 +97,10 @@ return Scaffold(
            width:double.infinity,
           // padding: EdgeInsets.only(left:20),
            decoration: BoxDecoration(
-              //gradient: LinearGradient(
-              //  begin: Alignment.topRight,
-              //  end: Alignment.bottomLeft,
-               // colors: [
-               //   Colors.orangeAccent[400],
-                //  Colors.orange[300],
-               //   Colors.orangeAccent[200],
-               // ]
-             // ),
              color: Colors.white
             ), 
 
-            child: Column(
+            child: Column(  
               crossAxisAlignment: CrossAxisAlignment.center,
              mainAxisAlignment: MainAxisAlignment.center,
              //verticalDirection: VerticalDirection.down,
@@ -125,13 +113,13 @@ return Scaffold(
 
             Shimmer.fromColors(child:       Text('My Records',style: TextStyle(
                       fontSize:50 , fontFamily: 'Pacifico', fontWeight: FontWeight.w700), ),
-                       baseColor: Colors.orangeAccent[200],
-                        highlightColor: Colors.orangeAccent[100] ),
+                       baseColor: Colors.lightBlueAccent[200],
+                        highlightColor: Colors.lightBlueAccent[100] ),
 
             SizedBox(height:40),
 
-            SpinKitFadingCircle(color: Colors.orangeAccent[200],
-                            size: 30,
+            SpinKitFadingCircle(color: Colors.lightBlueAccent[200],
+                            size: 40,
                 
                             )         
         

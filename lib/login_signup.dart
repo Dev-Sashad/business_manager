@@ -184,7 +184,7 @@ void _loadingDialog() {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white10,
           title: new Text(""),
           content: Container(
             height: MediaQuery.of(context).size.height*0.15,
@@ -348,21 +348,20 @@ void _showVerifyEmailSentDialog() {
   //Create user
   if ( authFormType == AuthFormType.signUp){
 if (validate()){
-     auth.signUp(_email, _password).then((value) async {
-          if(value != null){
-                User user = FirebaseAuth.instance.currentUser;
-                user.sendEmailVerification();
-                print('Signed up user: $value');
-              userIdentity= value.user.uid;
+    await auth.signUp(_email, _password).then((value) {
+            _loadingDialog();
+            User user= FirebaseAuth.instance.currentUser;  
+              user.sendEmailVerification();
+              userIdentity= user.uid;
                print('Signed up user: $userIdentity');
-             _loadingDialog();
-             checkSession().then((value){ 
-              
-             FirebaseFirestore.instance.collection('users').doc(userIdentity).set({'email':_email, 'username':userName, 'password':_password});
+            
+             checkSession().then((value){         
+             FirebaseFirestore.instance.collection('users').doc(userIdentity).
+             set({'email':_email, 'username':userName, 'password':_password});
               _showVerifyEmailSentDialog();
-});
-          }
-    }).catchError((msg) {
+          });
+
+     }).catchError((msg) {
       if (msg.code == 'weak-password') {
     print('The password provided is too weak.');
   } else 
@@ -370,46 +369,54 @@ if (validate()){
       print('user already exist');
        _useralreadyexistDialog();  
   }
-    }); 
+    });   
+      
  }
   }
 
 //Else for signIN a user  
 else {
   if (validate()){
-    auth.signIn(_email, _password).catchError((error) {    
+   await auth.signIn(_email, _password).catchError((error) {    
       if (error.code == 'user-not-found') {
     print('No user found for this email.');
-        _showwrongCredentialsDialog();
+       return _showwrongCredentialsDialog();
   } else if (error.code == 'wrong-password') {
     print('Wrong password provided for that user.');
-    _showwrongPasswordDialog();
+      return _showwrongPasswordDialog();
   }
-  }).then((result) async {
-      
-          _loadingDialog();
-          checkSession().then((value) async {
-                if (value){
-                  User user = FirebaseAuth.instance.currentUser;
-
+  }).then((value) {
+    print('$value');
+                  if (value !=null){
+                         _loadingDialog();
+            User user = FirebaseAuth.instance.currentUser;
                if(!user.emailVerified){
-                 user.sendEmailVerification();
-                 FirebaseAuth.instance.signOut();
-                    _showVerifyEmailDialog();
-                }
-         
-           
+                      checkSession().then((event) async {
+                await user.sendEmailVerification().then((value){
+                    // FirebaseAuth.instance.signOut();
+                   return  _showVerifyEmailDialog();     
+                 });
+                      });
+                } 
+
              else{  
+                 checkSession().then((event) async {
               Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (BuildContext context)=>HomePage())
            );
-                } 
+                });
+                }
+                  }
 
-          }});
-  });        
-  }
-} 
-}
+        else{
+         return  _showwrongCredentialsDialog();
+        }
+  });
+                    
+
+              }
+            } 
+            }
 
   @override
   void initState() {
@@ -448,7 +455,7 @@ else {
                 Colors.orangeAccent[100],
                ]
               ),             
-               borderRadius: BorderRadius.only( bottomRight: Radius.circular(30)),
+               borderRadius: BorderRadius.only( bottomRight: Radius.circular(50)),
                               ),
                               child: Column(
                                 children: [
@@ -466,12 +473,11 @@ else {
                       
                       Expanded(
 
-            child: Column(
-              
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,     
-              children: <Widget>[
-
+            child: Container(
+                color: Colors.white,
+                child:Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                Padding(
                padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
 
@@ -483,7 +489,8 @@ else {
                 ),
                 ),
                ),      
-        ],
+                  ]
+                )
       ),
        ),
 
@@ -531,13 +538,13 @@ else {
 
                        Text(
                     headerText, style: TextStyle(
-                      fontSize:30 , color: Colors.blue,fontWeight: FontWeight.bold, fontFamily: 'pacifico',), 
+                      fontSize:30 , color: Colors.tealAccent,fontWeight: FontWeight.bold, fontFamily: 'pacifico',), 
                       textAlign: TextAlign.left
                       ),
                         
                          SizedBox(height:1),
               
-                    Text('we aim at ensuring adequate keeping \nof your records for proper bussines monitoring.',style: TextStyle(
+                    Text('Adequate record keeping is necessary for \nproper bussines monitoring.',style: TextStyle(
                       fontSize:15,color:Colors.white, fontStyle: FontStyle.italic
                     ),
                     textAlign: TextAlign.left
@@ -634,7 +641,7 @@ return InputDecoration(
      hintStyle: TextStyle( 
      fontSize: 15,
       fontFamily: 'Montserrat',
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w300,
       color: Colors.grey,
       ),
      // fillColor: Colors.white,
@@ -668,7 +675,7 @@ return InputDecoration(
           Padding(padding: EdgeInsets.only(bottom:0),
                    child:FlatButton(
                      child:Text(forgotPasswordText, style: 
-                   TextStyle(fontSize:15, color:Colors.greenAccent, fontWeight: FontWeight.bold),
+                   TextStyle(fontSize:17, color:Colors.greenAccent, fontWeight: FontWeight.bold),
                      ),
                       onPressed: (){
                         setState(() {
@@ -686,7 +693,7 @@ return InputDecoration(
                    Container(
                      
                      alignment: Alignment.bottomLeft,
-                height:  MediaQuery.of(context).size.height*0.15,
+                height:  MediaQuery.of(context).size.height*0.12,
                 width:  MediaQuery.of(context).size.width*0.5,
                 child: FlatButton(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
@@ -717,11 +724,11 @@ return InputDecoration(
                   
     Container(
        alignment: Alignment.bottomRight,
-      height: MediaQuery.of(context).size.height*0.15,
+      height: MediaQuery.of(context).size.height*0.12,
       width:  MediaQuery.of(context).size.width*0.5,
    child: FlatButton(
      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-     color: Colors.orangeAccent,
+     color: Colors.white,
       onPressed: (){
         setState(() {
            switchFormState(newFormState);
@@ -732,9 +739,9 @@ return InputDecoration(
         child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-        Text(switchButtonText1, style: TextStyle(color: Colors.grey, fontSize: 15,),),
+        Text(switchButtonText1, style: TextStyle(color: Colors.tealAccent, fontSize: 15,),),
         SizedBox(height:5),
-         Text(switchButtonText2, style: TextStyle(color: Colors.white, fontSize: 15,),),
+         Text(switchButtonText2, style: TextStyle(color: Colors.orangeAccent, fontSize: 15,),),
         ]
         )
           ),

@@ -82,6 +82,10 @@ String stockValidator(String value) {
    else if (value.isEmpty){
      return 'enter quantity';
   }
+
+  else if (int.parse(value) > itemQuantity){
+    return 'quantity to sell is greater than available quantity';
+  }
    else 
     return null;
   
@@ -93,8 +97,8 @@ String stockValidator(String value) {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("enter/select a value"),
-          content: new Text(""),
+          title: new Text("Your sale was not successful"),
+          content: new Text("enter/check your inputs"),
           actions: <Widget>[
               flatbutton(
              FlatButton(
@@ -118,14 +122,6 @@ String stockValidator(String value) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orangeAccent,
-        actions: <Widget>[
-          IconButton(
-           icon: Icon((Icons.arrow_back_ios),color: Colors.white,),
-            onPressed:(){
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
         title: 
           Text('Sell Stock',textAlign:TextAlign.center, 
           style:TextStyle(color: Colors.white, fontSize:25),),
@@ -160,10 +156,12 @@ String stockValidator(String value) {
        SizedBox(height:30),
       Text('Available Quantity', style:TextStyle(color: Colors.black, fontWeight:FontWeight.bold,fontSize:20)),
        SizedBox(height: 10,),
+
        Container(
         padding: EdgeInsets.symmetric(vertical:5, horizontal: 10),
         width: MediaQuery.of(context).size.width*0.7,
         height: 60,
+        alignment: Alignment.center,
         decoration: BoxDecoration(
           border: Border.all(
             color: Colors.orangeAccent,
@@ -181,9 +179,25 @@ String stockValidator(String value) {
       SizedBox(height:20),
            
            Container(
+             decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.orangeAccent,
+            width: 2.0,
+          ),
+          borderRadius: BorderRadius.circular(7)
+          
+        ),
+             alignment: Alignment.center,
              width: MediaQuery.of(context).size.width*0.7,
+             height: 60,
              child:TextFormField( 
-        
+                 style: TextStyle(
+                 fontSize: 30,
+                 fontWeight: FontWeight.bold,
+                fontFamily: 'Montserrat',
+                color: Colors.black,
+               ), 
+          keyboardType: TextInputType.number,
         decoration: buildSignupInputDecoration('enter quantity to sell'),
           validator: stockValidator,
         textAlign: TextAlign.center,
@@ -228,10 +242,12 @@ String stockValidator(String value) {
      
      SizedBox(height:30),
 
-     Container (
+     Container ( 
+      alignment: Alignment.center,
+       height: 60,
        padding: EdgeInsets.symmetric(vertical:10),
         width: MediaQuery.of(context).size.width*0.7,
-        height: 50,
+
         decoration: BoxDecoration(
           border: Border.all(
             color: Colors.greenAccent,
@@ -247,12 +263,20 @@ String stockValidator(String value) {
            
            Container(
              width: MediaQuery.of(context).size.width*0.5,
-             child: TextFormField(   
+             child: TextFormField(  
+                style: TextStyle(
+                 fontSize: 30,
+                 fontWeight: FontWeight.bold,
+                fontFamily: 'Montserrat',
+                color: Colors.black,
+               ), 
+          keyboardType: TextInputType.number,
+
         decoration: InputDecoration(
           border: InputBorder.none,
-      contentPadding: const EdgeInsets.symmetric(horizontal:10, vertical:10),
+      contentPadding: const EdgeInsets.symmetric(horizontal:10, vertical:7),
         hintText: actualPrice.toString(),
-        hintStyle: TextStyle(fontWeight:FontWeight.bold, color:Colors.black , fontSize:20,),
+        hintStyle: TextStyle(color:Colors.grey , fontSize:30,),
         prefixIcon: Image.asset('assets/naira.png', ),
         ),
         validator: stockValidator,
@@ -269,7 +293,7 @@ String stockValidator(String value) {
         SizedBox(width:10),
 
         InkWell(onTap: (){
-if (selectedItem==null || actualPrice<=0 || actualQuantity<=0 ){
+if (selectedItem==null || actualPrice<=0 || actualQuantity<=0 || actualQuantity > itemQuantity){
               _salesNotSucessful();
           }
 
@@ -445,7 +469,7 @@ return Container(
 return InputDecoration(
      hintText: hint,
      hintStyle: TextStyle( 
-     fontSize: 10,
+     fontSize: 15,
       fontFamily: 'Montserrat',
       color: Colors.grey,
       ),     

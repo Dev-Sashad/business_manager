@@ -77,7 +77,7 @@ class _StocklistState extends State<Stocklist> {
           child: ListTile(
             contentPadding: null,
             hoverColor: Colors.orangeAccent[100],
-            leading: CircleAvatar(radius: 10, backgroundColor: Colors.orangeAccent,),
+            leading: CircleAvatar(radius: 10, backgroundColor: Colors.green,),
             
             title: Row(
                mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -98,8 +98,9 @@ class _StocklistState extends State<Stocklist> {
       );
     }
 
+    
     else{
-      return Text('No Item added yet... Click menu to Add Item..', textAlign: TextAlign.center,);
+      return Text('Loading, Please wait......', textAlign: TextAlign.center,);
     }
     
 

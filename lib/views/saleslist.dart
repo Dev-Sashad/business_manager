@@ -73,7 +73,7 @@ var userIdentity;
           child: ListTile(
             contentPadding: null,
             hoverColor: Colors.orangeAccent[100],
-            leading: CircleAvatar(radius: 10, backgroundColor: Colors.orangeAccent,),
+            leading: CircleAvatar(radius: 10, backgroundColor: Colors.green,),
             
             title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -127,8 +127,10 @@ var userIdentity;
       );
     }
 
+     
+
     else{
-      return Text('No sales yet...', textAlign: TextAlign.center,);
+      return Text('Loading, Please wait......', textAlign: TextAlign.center,);
     }
     
 

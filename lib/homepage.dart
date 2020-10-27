@@ -22,7 +22,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
 final BaseAuth auth= Auth();
 
-var userIdentity,welcomeText ;
+var userIdentity,welcomeText=" " ;
 final firestoreInstance = FirebaseFirestore.instance;
 final formKey = GlobalKey<FormState>();
 QuerySnapshot salesList;
@@ -87,7 +87,7 @@ final form = formKey.currentState;
 
   @override
    
-   Future<void> initState () async {
+   void initState () {
     super.initState();
       //to get recently sold
      getData().then((results){
@@ -106,16 +106,18 @@ final form = formKey.currentState;
     //to get userName
     userIdentity= FirebaseAuth.instance.currentUser.uid;
      print('$userIdentity');
-   await FirebaseFirestore.instance.collection('users').doc(userIdentity).get().then((username){
+   FirebaseFirestore.instance.collection('users').doc(userIdentity).get().then((username){
       setState(() {
        userName = username;
       });
 
-      if (userName!=null){  
-        welcomeText = userName.data()['username'].toString();
+      if (userName != null){  
+       return welcomeText = userName.data()['username'].toString();
    }
-   else
-    welcomeText= "";
+
+   else if (userName = null) {
+     return welcomeText= "  ";
+   }
 
    });
   
@@ -325,15 +327,9 @@ return AnimatedPositioned (
               children: <Widget>[
                 AppBar(
                   automaticallyImplyLeading: false,
-                  backgroundColor: Colors.orangeAccent,
-                  title: Row(
-                    mainAxisSize: MainAxisSize.max,
-                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                 crossAxisAlignment: CrossAxisAlignment.start,
-                   children: <Widget>[ 
-                     InkWell(
-                  child: Icon(Icons.menu , color: Colors.white, size:30,),
-                  onTap: (){
+                  leading:  IconButton(
+                  icon: Icon(Icons.menu , color: Colors.white, size:30,),
+                  onPressed: (){
                     setState(() {
                       if(isCollapse)
                       _controller.forward();
@@ -343,19 +339,25 @@ return AnimatedPositioned (
                     });
                   },
                 ),
-                   Text(
+                  backgroundColor: Colors.orangeAccent,
+
+
+                  actions: <Widget>[
+          IconButton(
+           icon: Icon((Icons.power_settings_new),color: Colors.white,),
+            onPressed:(){
+              logout();
+            },
+          ),
+        ],
+
+                  title: Text(
                     'My Records', style: TextStyle(
                       fontSize:20 , fontWeight: FontWeight.bold, color: Colors.white), 
                       textAlign: TextAlign.center
                       ),
-
-                   InkWell(
-                  child: Icon(Icons.power_settings_new, color: Colors.white, size:30,),
-                  onTap: logout,
-                ),
-
-                   ]
-                 ),
+                 
+                 centerTitle: true,
                 
                 ),
                   
@@ -364,9 +366,9 @@ return AnimatedPositioned (
          Padding(padding: EdgeInsets.only(left:20),
                       child:   Row(
                     children: [
-                      Text('Welcome,', style:TextStyle(fontWeight: FontWeight.bold, fontSize:25, color:Colors.black)),
+                      Text('Welcome,', style:TextStyle(fontWeight: FontWeight.bold, fontSize:20, color:Colors.black)),
                       SizedBox(width:5),
-                    Text(welcomeText, style:TextStyle(fontWeight: FontWeight.bold, fontSize:25, color:Colors.black)),
+                    Text(welcomeText, style:TextStyle(fontWeight: FontWeight.bold, fontSize:20, color:Colors.black)),
                  
                     ],
                   ), 
@@ -383,8 +385,9 @@ return AnimatedPositioned (
               scrollDirection: Axis.horizontal,
               pageSnapping: true,
               children: <Widget>[
+
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal:5),
+                    margin: const EdgeInsets.symmetric(horizontal:10),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                        color: Colors.orange[50],
@@ -399,23 +402,19 @@ return AnimatedPositioned (
                        // SizedBox(height:5),
 
                         Expanded(
-                          child: container(
-                          Container(
+                          child: Container(
                             width: MediaQuery.of(context).size.width,
                             height: MediaQuery.of(context).size.width*0.5,
                             child: _recentSalesList(),
                           )
-                          )
                         )
                          
                       ]
-                    ),
-
+                    )
                   ),
 
-                    container(
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal:5),
+                    margin: const EdgeInsets.symmetric(horizontal:10),
                      decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                        color: Colors.orange[50],
@@ -431,8 +430,7 @@ return AnimatedPositioned (
                       ]
                     ),
 
-                   )
-                  ),
+                   ),
 
               ],
             ),
@@ -450,21 +448,23 @@ return AnimatedPositioned (
               //mainAxisSize: MainAxisSize.max,
                   children: <Widget> [
                     flatbutton(
-                 FlatButton(onPressed: (){
+                    color: Colors.blueAccent,
+                child: FlatButton(onPressed: (){
                    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => Stocklist()));
                  },
                    child: _homepagebutton( 'STOCKS',ImageIcon( AssetImage('assets/airtime.png'),
                     color: Colors.white, size: 30, ),
-                    Colors.blueAccent))),
+                   ))),
 
                  // SizedBox(height:10),
                     flatbutton(
-                  FlatButton(onPressed:(){
+                      color: Colors.redAccent,
+                  child:FlatButton(onPressed:(){
                    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => Addstock()));
                  },
                    child: _homepagebutton( 'ADD STOCK',ImageIcon( AssetImage('assets/open_account.png'),
                     color: Colors.white, size: 30,),
-                    Colors.redAccent))),
+                   ))),
 
                 ]
                 ),
@@ -476,21 +476,23 @@ return AnimatedPositioned (
                   //mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
                     flatbutton(
-                   FlatButton(onPressed: (){
+                      color: Colors.purpleAccent,
+                   child:FlatButton(onPressed: (){
                    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => Sellstock()));
                  },
                    child: _homepagebutton( 'SELL',ImageIcon( AssetImage('assets/paybills.png'),
                     color: Colors.white, size: 30,),
-                    Colors.purpleAccent))),
+                    ))),
 
                  // SizedBox(height:10),
                     flatbutton(
-                  FlatButton(onPressed: (){
+                   color: Colors.brown,
+                 child: FlatButton(onPressed: (){
                    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => Salelist()));
                  },
                    child: _homepagebutton( 'SALES',ImageIcon( AssetImage('assets/withdraw.png'),
                     color: Colors.white, size: 30,), 
-                    Colors.brown)))
+                    )))
                  
                 ],
                 ),
@@ -509,16 +511,11 @@ return AnimatedPositioned (
 
 }
 
-Container _homepagebutton(String _text, ImageIcon _textIcon, Color _color){
+FlatButton _homepagebutton(String _text, ImageIcon _textIcon, [MaterialAccentColor blueAccent]){
   
-  return Container(
-                    height: 100,
-                    width: MediaQuery.of(context).size.width*0.35,
+  // ignore: missing_required_param
+  return FlatButton(               
                 // margin: EdgeInsets.symmetric(horizontal: 30),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                     color: _color,              
-                    ),
                child: Column(
                  mainAxisAlignment: MainAxisAlignment.center,
                children: <Widget> [
@@ -611,26 +608,32 @@ Widget _recentSalesList(){
   }
 
 
- Container container (Container child){
-return Container(
-                child: Material(
-                  borderRadius: BorderRadius.circular(5),
-                  shadowColor: Colors.grey,
+ Material container (Container child){
+return Material(
+              shadowColor: Colors.grey,
                   elevation: 2.0,
+                  borderRadius: BorderRadius.circular(8),
                   child: child,
-                    )
+                   
               );
 }
 
-Container flatbutton (FlatButton child){
+Container flatbutton ({Color color, FlatButton child}){
 return Container(
-  margin: EdgeInsets.symmetric(horizontal:20),
+  height: 100,
+  width: MediaQuery.of(context).size.width*0.35,
+  decoration: BoxDecoration(
+  borderRadius: BorderRadius.circular(5),
+             
+  ),
+  margin: EdgeInsets.symmetric(horizontal:10),
                 child: Material(
                   borderRadius: BorderRadius.circular(5),
                   shadowColor: Colors.grey,
+                  color: color,
                   elevation: 2.0,
                   child: child,
-                    )
+                    ) 
               );
 }
 

@@ -104,7 +104,14 @@ void _itemNotSucessfullyAdded() {
   Widget build(BuildContext context) {
    return Scaffold(
            appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: IconButton(icon: Icon(Icons.arrow_back_ios),
         
+         onPressed: (){
+            Navigator.of(context).pushReplacement(
+    MaterialPageRoute(builder: (BuildContext context)=>HomePage())
+  );
+        }),
         backgroundColor: Colors.orangeAccent,
         title: 
           Text('Add Item',textAlign:TextAlign.center, 
@@ -117,10 +124,18 @@ void _itemNotSucessfullyAdded() {
 
         Form(key:formKey,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-
+              SizedBox(height:50),
             container(
           TextFormField(decoration: buildSignupInputDecoration('enter product name'),
+          style: TextStyle(
+                 fontSize: 20,
+                fontFamily: 'Montserrat',
+                color: Colors.black,
+               ), 
+          keyboardType: TextInputType.text,
           onChanged: (value){
             this.productName = value;
           },
@@ -129,11 +144,16 @@ void _itemNotSucessfullyAdded() {
           ),
             ),
 
-          SizedBox(height:10),
+          SizedBox(height:15),
 
             container(
           TextFormField(decoration: buildSignupInputDecoration('quantity'),
-
+                   style: TextStyle(
+                 fontSize: 20,
+                fontFamily: 'Montserrat',
+                color: Colors.black,
+               ), 
+          keyboardType: TextInputType.number,
                validator: (value){
           return value.isEmpty ? 'enter a quantity':null; 
              },
@@ -151,6 +171,7 @@ void _itemNotSucessfullyAdded() {
         ]
       ),
           ),
+            SizedBox(height:40),
 
         flatbutton(
        FlatButton(onPressed:() {
@@ -167,7 +188,7 @@ void _itemNotSucessfullyAdded() {
                 _itemSucessfullyAdded();
           }
 
-          else if (productName=null || quantity<0){
+          else if (productName=null || quantity <0){
             _itemNotSucessfullyAdded();
           }
           
@@ -184,11 +205,12 @@ void _itemNotSucessfullyAdded() {
 return InputDecoration(
      hintText: hint,
      hintStyle: TextStyle( 
-     fontSize: 10,
+     fontSize: 15,
       fontFamily: 'Montserrat',
       color: Colors.grey,
       ),     
-      border: InputBorder.none
+      border: InputBorder.none,
+      contentPadding: const EdgeInsets.only(left:20)
       );
 
 }
@@ -209,6 +231,7 @@ return Container(
 Container flatbutton (FlatButton child){
 return Container(
   margin: EdgeInsets.symmetric(horizontal:20),
+  width: MediaQuery.of(context).size.width*0.6,
                 child: Material(
                   borderRadius: BorderRadius.circular(5),
                   shadowColor: Colors.grey,
