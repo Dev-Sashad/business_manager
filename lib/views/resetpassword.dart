@@ -191,7 +191,7 @@ void initState() {
           ),
           ),
 
-          SizedBox(height:10),
+          SizedBox(height:15),
 
           container(
           TextFormField(decoration: buildSignupInputDecoration('new password'),
@@ -205,7 +205,7 @@ void initState() {
         )
         ),
 
-         SizedBox(height:20),
+         SizedBox(height:40),
 
             flatbutton(
              FlatButton(onPressed:() {
