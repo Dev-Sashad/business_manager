@@ -160,9 +160,9 @@ return showDialog(
      ),
       ),
       actions: <Widget>[
-        FlatButton(onPressed:() async {
+        FlatButton(onPressed:() {
         if(validateEmail()) {
-  await FirebaseAuth.instance.sendPasswordResetEmail(email: resetEmailPassword);
+        FirebaseAuth.instance.sendPasswordResetEmail(email: resetEmailPassword);
         Navigator.of(context).pop();  
        return _showforgotPasswordDialog();
         }
@@ -408,9 +408,9 @@ else {
                 }
                   }
 
-        else{
-         return  _showwrongCredentialsDialog();
-        }
+        //else{
+       //  return  _showwrongCredentialsDialog();
+       // }
   });
                     
 

@@ -81,7 +81,7 @@ void _navigatetoHome(){
 }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {   
 return Scaffold(
        body: LayoutBuilder(
          builder: (ctx, constrains){

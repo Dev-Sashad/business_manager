@@ -210,12 +210,12 @@ void initState() {
              FlatButton(onPressed:() {
               if(validate()){
                    _loadingDialog();
-                  checkSession().then((value) { 
+                  checkSession().then((value) async { 
             if(getoldPassword != oldPassword){
               _passwordNotSucessfullyChanged();
             }
             else{
-           FirebaseAuth.instance.authStateChanges().listen((User user) {
+
                   DocumentReference documentReference = FirebaseFirestore.instance.collection('users').doc(userIdentity);
                   FirebaseFirestore.instance.runTransaction((Transaction transaction) async{
 
@@ -224,9 +224,11 @@ void initState() {
                 });    
             });
 
-                user.updatePassword(newPassword);
-                   _passwordSucessfullyChanged();                 
-           });
+                await FirebaseAuth.instance.currentUser.updatePassword(newPassword).then((value){
+                      _passwordSucessfullyChanged();  
+                });
+                                
+          
             }
               }
                   );

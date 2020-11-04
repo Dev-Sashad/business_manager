@@ -302,8 +302,7 @@ if (selectedItem==null || actualPrice<=0 || actualQuantity<=0 || actualQuantity 
  
       var dateParse = DateTime.parse(date);
  
-       var formattedDateTime = "${dateParse.day}-${dateParse.month}-${dateParse.year} / ${dateParse.hour}:${dateParse.minute}";
-     // var formattedTime = "${dateParse.hour}:${dateParse.minute}";
+       var formattedDateTime = "${dateParse.day}-${dateParse.month}-${dateParse.year} / ${dateParse.hour}:${dateParse.minute}:${dateParse.second}";
 
     setState(() {
  

@@ -37,14 +37,6 @@ var userIdentity;
     return Scaffold(
       appBar:AppBar(
         backgroundColor: Colors.orangeAccent,
-       // actions: <Widget>[
-         // IconButton(
-         //  icon: Icon((Icons.arrow_back_ios),color: Colors.white,),
-         //   onPressed:(){
-        //  Navigator.pop(context);
-        //    },
-        //  ),
-        //],
         title: 
           Text('Sales ',textAlign:TextAlign.center, 
           style:TextStyle(color: Colors.white, fontSize:25),),
@@ -108,10 +100,6 @@ var userIdentity;
 
                     Row(children: [
                     Text(salesList.docs[i].data()['Date'], style:TextStyle(color: Colors.blue,fontSize:15), ),
-                  //  SizedBox(width:2),
-                   // Text('/', style:TextStyle(color: Colors.black,fontSize:15),),
-                   // SizedBox(width:2),
-                  // Text(salesList.docs[i].data()['Time'], style:TextStyle(color: Colors.orange,fontSize:15),),
                     ],)
                    
                ],
