@@ -62,21 +62,34 @@ String stockValidator(String value) {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Stock was successfully added"),
-          content: new Text("Thank you"),
+          title: new Text("Stock was successfully added", textAlign: TextAlign.center),
+          content: new Text("To add more stocks,\nClick OK", textAlign: TextAlign.center),
           actions: <Widget>[
-            
-            flatbutton(
-             FlatButton(
-              child: new Text("Dismiss",  style: TextStyle(fontSize:20, color:Colors.white),),
+            Row(
+              children:[
+                Align(
+                  alignment:Alignment.bottomLeft,
+                  child:   flatbutton(
+            FlatButton(
+              child: new Text("goto home", style: TextStyle(fontSize:20, color:Colors.white),),
               onPressed: () {             
-               //authFormType = AuthFormType.signIn;
+             
               Navigator.of(context).pushReplacement(
     MaterialPageRoute(builder: (BuildContext context)=>HomePage())
   );
                // loading=false;
-              },
-            ),
+              },),)),
+
+               Align(
+                  alignment:Alignment.bottomRight,
+                  child:   flatbutton(
+            FlatButton(
+              child: new Text("Ok", style: TextStyle(fontSize:20, color:Colors.white),),
+              onPressed: () {             
+                    Navigator.pop(context);
+              },),)),
+         
+              ]
             )
           ],
         );
@@ -116,7 +129,7 @@ void _addStockNotSucessful() {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        
+         elevation: 0.0,
         backgroundColor: Colors.orangeAccent,
         title: 
           Text('Add Stock',textAlign:TextAlign.center, 
@@ -130,25 +143,18 @@ void _addStockNotSucessful() {
         
          builder: (ctx, constrains){
            return Scaffold(
-      body: Container(
-         decoration: BoxDecoration(
-          //image: DecorationImage(
-           // image: AssetImage("assets/background.png"),
-           // fit: BoxFit.cover,
-         // ),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+  child: Container(
+     decoration: BoxDecoration(
          color:  Colors.white
         ),
-        height: constrains.maxHeight,
-        child:SingleChildScrollView(
-  child: Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
   child: Padding(
-    padding: EdgeInsets.fromLTRB(10, 40, 10, 0),
-   child: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-     
-     children: [
+    padding: EdgeInsets.fromLTRB(10, 30, 10, 0),
+   child: Column( 
+     children: [ 
        _listView(),
        SizedBox(height: 20,),
       Container(
@@ -271,14 +277,14 @@ void _addStockNotSucessful() {
          icon: Icon(Icons.subdirectory_arrow_right, color:Colors.greenAccent, size:35,)),
          
         ],
-      ),)
-
+      ),),
    ],)
    )
   ) 
   ),
-  )
-  );})
+  );
+  }
+  ),
     );
   }   
 
@@ -291,8 +297,15 @@ void _addStockNotSucessful() {
       child: Text(quantity.toString(), style: TextStyle(fontSize:20, fontWeight: FontWeight.bold,
       color: Colors.black), textAlign: TextAlign.center,),
       decoration: BoxDecoration(
-        border: Border.all(width:1.5, color:Colors.orangeAccent),
-        borderRadius: BorderRadius.circular(10)
+        color: Colors.white,
+        border: Border.all(width:1.0, color:Colors.orangeAccent),
+        borderRadius: BorderRadius.circular(10),
+         boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius:4
+          )
+        ]
       ),
       ),
       onPressed: () {
@@ -335,7 +348,7 @@ void _addStockNotSucessful() {
                    ),
                 child: Theme(
             data: Theme.of(context).copyWith(
-              canvasColor: Colors.orangeAccent[100], // background color for the dropdown items
+              canvasColor: Colors.orange[50], // background color for the dropdown items
               buttonTheme: ButtonTheme.of(context).copyWith(
                 alignedDropdown: true,  //If false (the default), then the dropdown's menu will be wider than its button.
               )
@@ -378,7 +391,43 @@ void _addStockNotSucessful() {
 
 
      else{
-      return Text('Loading, Please wait...');
+      return      Container(
+           child:  Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              
+              children: <Widget>[
+                Icon(Icons.store, size:25, color: Colors.orangeAccent),
+                SizedBox(width:10),
+      
+                    Container(
+                  width: MediaQuery.of(context).size.width*0.6,
+                 height: 50,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                  color: Color(0xFFF2F2F2)
+                   ),
+                child: Theme(
+            data: Theme.of(context).copyWith(
+              canvasColor: Colors.orange[50], // background color for the dropdown items
+              buttonTheme: ButtonTheme.of(context).copyWith(
+                alignedDropdown: true,  //If false (the default), then the dropdown's menu will be wider than its button.
+              )
+            ),
+            child: DropdownButtonHideUnderline(
+
+                child: DropdownButton(
+                iconSize: 30,
+                isExpanded: false,
+                hint: Text('select stock', style: TextStyle(color: Colors.black)),
+                onChanged: (value) {  },
+                items: [],
+                ),
+                ),
+                )
+                )
+              ]
+           )
+      );
     }
     
   }
@@ -399,7 +448,8 @@ return InputDecoration(
 
 Container flatbutton (FlatButton child){
 return Container(
-  margin: EdgeInsets.symmetric(horizontal:20),
+  width:100,
+  margin: EdgeInsets.symmetric(horizontal:10),
                 child: Material(
                   borderRadius: BorderRadius.circular(5),
                   shadowColor: Colors.grey,

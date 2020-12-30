@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:records/homepage.dart';
@@ -10,7 +12,10 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 void main() async {
 WidgetsFlutterBinding.ensureInitialized();
  await Firebase.initializeApp();
- return runApp(MyApp());
+ Timer(Duration (seconds: 2 ), (){
+ return runApp(MyApp()
+ );
+ });
 }
 class MyApp extends StatelessWidget {
   // This widget is the root of your application. 
@@ -69,13 +74,13 @@ class _MainPageState extends State<MainPage> {
   }
 
 void _navigatetoLogin(){
-  Navigator.of(context).pushReplacement(
+  Navigator.pushReplacement(context,
     MaterialPageRoute(builder: (BuildContext context)=>LoginSignupPage(authFormType: AuthFormType.signIn))
   );
 }
 
 void _navigatetoHome(){
-  Navigator.of(context).pushReplacement(
+  Navigator.pushReplacement(context,
     MaterialPageRoute(builder: (BuildContext context)=>HomePage())
   );
 }

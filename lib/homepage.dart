@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:records/login_signup.dart';
@@ -9,9 +10,11 @@ import 'package:records/views/sell.dart';
 import 'package:records/views/stocklist.dart';
 import 'package:records/services/authentication.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rxdart/rxdart.dart';
+import 'menuitem.dart';
 
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatefulWidget{
  //bool debugShowCheckedModeBanner = false;
 @override
   HomePageState createState() => HomePageState();
@@ -27,6 +30,7 @@ final firestoreInstance = FirebaseFirestore.instance;
 final formKey = GlobalKey<FormState>();
 QuerySnapshot salesList;
 DocumentSnapshot userName;
+bool isEmpty = true;
 double total = 0.0;
 // to get recently sold data
    getData() async {
@@ -70,20 +74,21 @@ final form = formKey.currentState;
  }
   
   void logout() async{
-        await FirebaseAuth.instance.signOut();
-  Navigator.of(context).pushReplacement(
-    MaterialPageRoute(builder: (BuildContext context)=>LoginSignupPage(authFormType: AuthFormType.signIn))
-  );
-  
+    await FirebaseAuth.instance.signOut().then((value){
+     Navigator.pushReplacement(context, 
+     MaterialPageRoute(builder: (BuildContext context)=>LoginSignupPage(authFormType:AuthFormType.signIn)));
+     }); 
   }
   
-  bool isCollapse = true;
   double screenWidth, screenHeight;
-  final Duration duration = const Duration(milliseconds:400);
+  final Duration duration = const Duration(milliseconds:300);
   AnimationController _controller;
   Animation<double> _scaleAnimation;
   Animation<double> _menuScaleAnimation;
   Animation<Offset> _slideAnimation;
+  StreamController<bool> isCollapsedStreamController;
+  Stream <bool> isCollapsedStream;
+  StreamSink<bool> isCollapsedSink;
 
   @override
    
@@ -93,17 +98,12 @@ final form = formKey.currentState;
      getData().then((results){
       setState(() {
         salesList = results;
+        isEmpty = salesList.docs.isEmpty;
       });
     });
+
       //to get total sales
       getTotalSales();
-    // getTotalSales().then((sales){
-      //setState(() {
-     //   totalSales = sales;
-    //  });
-    //});
-    
-    //to get userName
     userIdentity= FirebaseAuth.instance.currentUser.uid;
      print('$userIdentity');
    FirebaseFirestore.instance.collection('users').doc(userIdentity).get().then((username){
@@ -122,17 +122,36 @@ final form = formKey.currentState;
    });
   
 
-    _controller = AnimationController(vsync: this, duration: duration);
+    _controller = AnimationController(vsync:this, duration: duration);
      _scaleAnimation = Tween<double>(begin: 1, end: 0.8).animate(_controller);
       _menuScaleAnimation = Tween<double>(begin: 0.5, end: 1).animate(_controller);
-     _slideAnimation = Tween<Offset>(begin: Offset(-1, 0), end: Offset(0, 0),).animate(_controller);
+     _slideAnimation = Tween<Offset>(begin: Offset(-0.5, 0), end: Offset(0, 0),).animate(_controller);
+    isCollapsedStreamController = PublishSubject<bool>();
+    isCollapsedStream = isCollapsedStreamController.stream;
+    isCollapsedSink = isCollapsedStreamController.sink;
    }
 
-     @override
-    void dispose () {
-      _controller.dispose();
-     super.dispose();
-    }
+    @override
+void dispose(){
+  super.dispose();
+  _controller.dispose();
+  isCollapsedStreamController.close();
+  isCollapsedSink.close();
+}
+
+void onIconpressed(){
+  final animationStatus = _controller.status;
+  final isAnimationCompleted = animationStatus == AnimationStatus.completed;
+
+  if (isAnimationCompleted){
+    isCollapsedSink.add(false);
+    _controller.reverse();
+  }
+  else{
+    isCollapsedSink.add(true);
+      _controller.forward();
+  }
+}
 
 Widget build(BuildContext context) {
   Size size = MediaQuery.of(context).size;
@@ -140,7 +159,7 @@ Widget build(BuildContext context) {
     screenWidth= size.width;
 
 return  Scaffold(
-  backgroundColor: Colors.orange[700],
+  backgroundColor: Colors.orange[400],
   body: Stack(
       children: <Widget>[
        menu(context),
@@ -159,137 +178,85 @@ Widget menu(context) {
     position: _slideAnimation,
   child: ScaleTransition(
     scale: _menuScaleAnimation, 
-  child: Padding (
-   padding: const EdgeInsets.only(left:0.0),
-  child: Align(
-    alignment: Alignment.centerLeft,
     child: Container(
-      height:MediaQuery.of(context).size.height*0.6,
+      padding: EdgeInsets.only(top: 100),
+      color:Colors.orange[400],
   child: Column(
-    mainAxisSize: MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    crossAxisAlignment: CrossAxisAlignment.stretch,
     children: <Widget>[
+              MenuItem(
+                  icon: Icons.home,
+                   title: 'Homepage',
+                   onTap: (){
+                     onIconpressed();
+               Navigator.pushReplacement(context, 
+     MaterialPageRoute(builder: (BuildContext context)=>HomePage()));
+                   },
+                   ),
+                MenuItem(
+                  icon: Icons.lock, 
+                  title: 'Change Password',
+                  onTap: (){
+                    onIconpressed();
+                   Navigator.pushReplacement(context, 
+     MaterialPageRoute(builder: (BuildContext context)=>ResetPasswordpage()));
+                   },
+                  ),
 
-      Padding(padding: const EdgeInsets.only(left:10.0),
-      child:  Row(
-        
-        children: <Widget>[  
-        Icon(Icons.update , color: Colors.white),
-        
-       // Padding(padding: EdgeInsets.only(left: 10)),
+                  Divider(
+                   color: Colors.white.withOpacity(0.9),
+                   height: 64,
+                   thickness: 0.9,
+                   indent: 32,
+                   endIndent: 32,
+                 ),
 
-        FlatButton(onPressed:(){
-            setState(() {
-                      if(isCollapse)
-                      _controller.forward();
-                      else
-                      _controller.reverse(); 
-                      isCollapse =!isCollapse;
-                    });
+                MenuItem(
+                  icon: Icons.add, 
+                  title: 'Add Items',
+                  onTap: (){
+                    onIconpressed();
+                   Navigator.pushReplacement(context, 
+     MaterialPageRoute(builder: (BuildContext context)=>AddItempage()));
+                   },
+                  ),
 
-           Navigator.of(context).pushReplacement(
-    MaterialPageRoute(builder: (BuildContext context)=>AddItempage())
-  );
-    
-        } , 
-        
-        child:Text(
-        'Add Item', style: TextStyle(color: Colors.white, fontSize: 15, )),
-      ),
-      
-        ]
-      ),
-      ),
-      
+                 MenuItem(
+                  icon: Icons.show_chart, 
+                  title: 'Sales Chart',
+                  onTap: (){
+                    onIconpressed();
+                  Navigator.pushReplacement(context, 
+     MaterialPageRoute(builder: (BuildContext context)=>HomePage()));
+                   },
+                  ),
 
-      SizedBox(height:3.0, child: Container(decoration: BoxDecoration(color:Colors.white))),
+                 Divider(
+                   color: Colors.white.withOpacity(0.9),
+                   height: 64,
+                   thickness: 0.9,
+                   indent: 32,
+                   endIndent: 32,
+                 ),
 
-      Padding(padding: const EdgeInsets.only(left:10.0),
-      child: Row(
-        
-        children: <Widget>[  
-        Icon(Icons.show_chart , color: Colors.white),
-        
-        Padding(padding: EdgeInsets.only(left: 15)),
-      Text(
-        'Sales Chart', style: TextStyle(color: Colors.white, fontSize: 15, )
-      ),
-        ]
-      ),
-      ),
+                  MenuItem(
+                  icon: Icons.settings, 
+                  title: 'Settings',
+                  onTap: (){
+                    onIconpressed();
+                   },
+                  ),
 
-      SizedBox(height:3.0, child: Container(decoration: BoxDecoration(color:Colors.white))),
+                 MenuItem(
+                  icon: Icons.person, 
+                  title: 'LogOut',
+                  onTap: () {
+                    onIconpressed();
+                    logout();  
+                   },
+                  ),
 
-      Padding(padding: const EdgeInsets.only(left:10.0),
-      child:Row(
-        
-        children: <Widget>[  
-        Icon(Icons.settings , color: Colors.white),
-        
-        Padding(padding: EdgeInsets.only(left: 15)),
-      Text(
-        'Settings', style: TextStyle(color: Colors.white, fontSize: 15, )
-      ),
-        ]
-      ),
-      ),
-
-      SizedBox(height:3.0, child: Container(decoration: BoxDecoration(color:Colors.white))),
-
-      Padding(padding: const EdgeInsets.only(left:10.0),
-      child: Row(
-        
-        children: <Widget>[  
-        Icon(Icons.lock_open , color: Colors.white),
-        
-      //  Padding(padding: EdgeInsets.only(left: 5)),
-
-        FlatButton(onPressed:(){
-
-            setState(() {
-                      if(isCollapse)
-                      _controller.forward();
-                      else
-                      _controller.reverse(); 
-                      isCollapse =!isCollapse;
-                    });
-            Navigator.of(context).pushReplacement(
-    MaterialPageRoute(builder: (BuildContext context)=>ResetPasswordpage())
-  );
-
-        } , 
-        
-        child:Text(
-        'Change Password', style: TextStyle(color: Colors.white, fontSize: 15, )),
-      ),
-      
-        ]
-      ),),
-
-      SizedBox(height:3.0, child: Container(decoration: BoxDecoration(color:Colors.white))),
-      
-     Padding(padding: const EdgeInsets.only(left:10.0),
-     child: Row(
-        
-        children: <Widget>[  
-           Icon(Icons.person , color: Colors.white),
-        
-        Padding(padding: EdgeInsets.only(left: 15)),
-
-        GestureDetector(
-          onTap: logout,
-       child: Text(
-        'Logout', style: TextStyle(color: Colors.white, fontSize: 15, )
-      ),
-        ),
-        ]
-      ),
-     )
 
     ],
-  )
-  )
   )
   )
   )
@@ -297,31 +264,45 @@ Widget menu(context) {
 }
 
 Widget dashboard(context) {
-return AnimatedPositioned (
+return StreamBuilder <bool>(
+     initialData: false,
+     stream: isCollapsedStream,
+     builder: (context, isCollapsedAsync){
 
+return AnimatedPositioned (
       duration: duration,
       top: 0,
       bottom: 0,
-      left: isCollapse? 0 : 0.38*screenWidth,
-      right: isCollapse? 0 : -0.45*screenWidth,
+      left: isCollapsedAsync.data? 0.50*screenWidth : 0,
+      right: isCollapsedAsync.data? -0.50*screenWidth: 0,
 
       child: ScaleTransition(
         scale: _scaleAnimation,
 
     child: Scaffold(
+          floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
+     floatingActionButton: FloatingActionButton(
+       backgroundColor: Colors.white,
+          onPressed: () {
+           Navigator.of(context).pushReplacement(
+                   MaterialPageRoute(builder: (BuildContext context)=>AddItempage()));
+          },
+          child: Icon(Icons.add, size: 30, color: Colors.orangeAccent),
+          tooltip: 'Add Item',
+        ),
        body: LayoutBuilder(
          builder: (ctx, constrains){
-           return Scaffold(
+      return Scaffold(
       body: Container(
+        decoration: BoxDecoration(     
+        //borderRadius: BorderRadius.circular(40),
+        color: Colors.white
+             
+            ),
         height: constrains.maxHeight,
         child:SingleChildScrollView(
       child: Container(
        // margin: EdgeInsets.only(top: 10.0),
-        decoration: BoxDecoration(     
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white
-             
-            ),
 
             child: Column(
               children: <Widget>[
@@ -330,13 +311,7 @@ return AnimatedPositioned (
                   leading:  IconButton(
                   icon: Icon(Icons.menu , color: Colors.white, size:30,),
                   onPressed: (){
-                    setState(() {
-                      if(isCollapse)
-                      _controller.forward();
-                      else
-                      _controller.reverse(); 
-                      isCollapse =!isCollapse;
-                    });
+                     onIconpressed();
                   },
                 ),
                   backgroundColor: Colors.orangeAccent,
@@ -391,12 +366,18 @@ return AnimatedPositioned (
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                        color: Colors.orange[50],
+                         boxShadow: [
+                         BoxShadow(
+                           color: Colors.black12,
+                           blurRadius: 4,
+                         )
+                       ]
                     ),
                     width: MediaQuery.of(context).size.width*0.7,
                     child: Column(
                       children: <Widget>[
                         Padding(padding: const EdgeInsets.only(top:5.0),
-                         child: Text('Recent Sales', style:TextStyle(color: Colors.blueAccent, fontSize:20,),
+                         child: Text('Recent Sales', style:TextStyle(color: Colors.blueAccent, fontSize:17,fontWeight: FontWeight.w600),
                           textAlign: TextAlign.center,),
                         ),
                        // SizedBox(height:5),
@@ -418,15 +399,21 @@ return AnimatedPositioned (
                      decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                        color: Colors.orange[50],
+                       boxShadow: [
+                         BoxShadow(
+                           color: Colors.black12,
+                           blurRadius:4,
+                         )
+                       ]
                     ),
                     width: MediaQuery.of(context).size.width*0.7,
                     child: Column(
                       children: <Widget>[
                         Padding(padding: const EdgeInsets.only(top:5.0),
-                         child: Text('Total Sales', style:TextStyle(color: Colors.blueAccent, fontSize:20,)),
+                         child: Text('Total Sales', style:TextStyle(color: Colors.blueAccent, fontSize:17,fontWeight: FontWeight.w600)),
                         ),
-                          SizedBox(height:10),
-                         Text('₦ ${total.toString()}', style:TextStyle(color: Colors.black, fontSize:20, fontWeight: FontWeight.bold)),
+                          SizedBox(height:20),
+                         Text('₦ ${total.toString()}', style:TextStyle(color: Colors.black, fontSize:20, fontWeight: FontWeight.w600)),
                       ]
                     ),
 
@@ -448,7 +435,7 @@ return AnimatedPositioned (
               //mainAxisSize: MainAxisSize.max,
                   children: <Widget> [
                     flatbutton(
-                    color: Colors.blueAccent,
+                    color: Colors.cyan,
                 child: FlatButton(onPressed: (){
                    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => Stocklist()));
                  },
@@ -500,6 +487,11 @@ return AnimatedPositioned (
             ),
           ),
             ),
+
+            Padding(
+              padding: EdgeInsetsDirectional.only(start:165),
+              child:Text('Add Item', style: TextStyle(fontSize:15))
+            )
               ],
             ),
       ),
@@ -508,13 +500,16 @@ return AnimatedPositioned (
          }
     )
 )));
+     }
+);
 
 }
 
-FlatButton _homepagebutton(String _text, ImageIcon _textIcon, [MaterialAccentColor blueAccent]){
+// ignore: unused_element
+FlatButton _homepagebutton(String _text, ImageIcon _textIcon){
   
   // ignore: missing_required_param
-  return FlatButton(               
+  return FlatButton(             
                 // margin: EdgeInsets.symmetric(horizontal: 30),
                child: Column(
                  mainAxisAlignment: MainAxisAlignment.center,
@@ -539,7 +534,17 @@ FlatButton _homepagebutton(String _text, ImageIcon _textIcon, [MaterialAccentCol
 
 
 Widget _recentSalesList(){
-    if (salesList!=null){
+
+          if(isEmpty){
+          return Container(
+            alignment: Alignment.center,
+            
+            child: Text('You have no sales record', textAlign: TextAlign.center, style: TextStyle(fontSize:20),),
+
+          );
+              }
+
+    else {
       return ListView.builder(
        itemCount:salesList.docs.length,
        padding: EdgeInsets.only(top:0) ,
@@ -551,7 +556,7 @@ Widget _recentSalesList(){
             title: Row(
                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                   Text(salesList.docs[i].data()['Item'], style:TextStyle(color: Colors.green,fontSize:20,
+                   Text(salesList.docs[i].data()['Item'], style:TextStyle(color: Colors.green,fontSize:17,
                     fontWeight: FontWeight.bold
                     ),),
                     SizedBox(width:40),
@@ -583,10 +588,6 @@ Widget _recentSalesList(){
 
                     Row(children: [
                     Text(salesList.docs[i].data()['Date'], style:TextStyle(color: Colors.blue,fontSize:15), ),
-                   // SizedBox(width:2),
-                  //  Text('/', style:TextStyle(color: Colors.black,fontSize:15, fontWeight: FontWeight.bold),),
-                 //   SizedBox(width:2),
-                 //  Text(salesList.docs[i].data()['Time'], style:TextStyle(color: Colors.orange,fontSize:15),),
                     ],),
                ],
             ),
@@ -599,24 +600,7 @@ Widget _recentSalesList(){
       );
     }
 
-    else{
-      return Text('');
-    }
-    
-
-
   }
-
-
- Material container (Container child){
-return Material(
-              shadowColor: Colors.grey,
-                  elevation: 2.0,
-                  borderRadius: BorderRadius.circular(8),
-                  child: child,
-                   
-              );
-}
 
 Container flatbutton ({Color color, FlatButton child}){
 return Container(

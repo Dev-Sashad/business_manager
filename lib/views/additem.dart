@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:records/homepage.dart';
 
 
-
 class AddItempage extends StatefulWidget {  
   @override
 
@@ -16,7 +15,7 @@ final formKey = GlobalKey<FormState>();
 var userIdentity;
 final firestoreInstance = FirebaseFirestore.instance;
 var productName ;
-int quantity;
+int quantity, price;
 
  bool validate(){
 final form = formKey.currentState;
@@ -54,20 +53,35 @@ void _itemSucessfullyAdded() {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Item successfully Added"),
-          content: new Text("Thank you"),
+          title: new Text("Item successfully Added, Thank you", textAlign: TextAlign.center),
+          content: new Text("Would you like to new Item?\nClick OK", textAlign: TextAlign.center),
           actions: <Widget>[
-            flatbutton(
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              children:[
+                Align(
+                  alignment:Alignment.bottomLeft,
+                  child:   flatbutton(
             FlatButton(
-              child: new Text("Go to Homepage", style: TextStyle(fontSize:20, color:Colors.white),),
+              child: new Text("goto home", style: TextStyle(fontSize:20, color:Colors.white),),
               onPressed: () {             
-               //authFormType = AuthFormType.signIn;
+             
               Navigator.of(context).pushReplacement(
     MaterialPageRoute(builder: (BuildContext context)=>HomePage())
   );
                // loading=false;
-              },
-            ),
+              },),)),
+
+               Align(
+                  alignment:Alignment.bottomRight,
+                  child:   flatbutton(
+            FlatButton(
+              child: new Text("Ok", style: TextStyle(fontSize:20, color:Colors.white),),
+              onPressed: () {             
+                    Navigator.pop(context);
+              },),)),
+         
+              ]
             )
           ],
         );
@@ -104,6 +118,7 @@ void _itemNotSucessfullyAdded() {
   Widget build(BuildContext context) {
    return Scaffold(
            appBar: AppBar(
+              elevation: 0.0,
         automaticallyImplyLeading: false,
         leading: IconButton(icon: Icon(Icons.arrow_back_ios),
         
@@ -129,7 +144,13 @@ void _itemNotSucessfullyAdded() {
         children: <Widget>[
               SizedBox(height:50),
             container(
-          TextFormField(decoration: buildSignupInputDecoration('enter product name'),
+              Row (
+                children:[
+          Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width*0.7,
+            margin: EdgeInsets.symmetric(horizontal:10),
+            child: TextFormField(decoration: buildSignupInputDecoration('enter product name'),
           style: TextStyle(
                  fontSize: 20,
                 fontFamily: 'Montserrat',
@@ -142,12 +163,21 @@ void _itemNotSucessfullyAdded() {
           
           validator: itemNameValidator,
           ),
+          )
+                ]
+              )
             ),
 
           SizedBox(height:15),
 
             container(
-          TextFormField(decoration: buildSignupInputDecoration('quantity'),
+              Row(
+                children:[
+          Container (
+            height: 50,
+            width: MediaQuery.of(context).size.width*0.7,
+            margin: EdgeInsets.symmetric(horizontal:10),
+            child: TextFormField(decoration: buildSignupInputDecoration('quantity'),
                    style: TextStyle(
                  fontSize: 20,
                 fontFamily: 'Montserrat',
@@ -155,17 +185,58 @@ void _itemNotSucessfullyAdded() {
                ), 
           keyboardType: TextInputType.number,
                validator: (value){
-          return value.isEmpty ? 'enter a quantity':null; 
+          return value.isEmpty ? 'enter stock quantity':null; 
              },
           onChanged: (value){
-            
+                 
             if(value!=null){
               this.quantity = int.parse(value);
             }
             else{
               this.quantity=0;
             }
-          },),
+          
+          },
+          ),
+          )
+                ]
+              )
+            ),
+
+            SizedBox(height:15),
+
+            container(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children:[
+                  Image.asset('assets/naira.png', height:40),
+
+                Container(
+                  height: 50,
+            width: MediaQuery.of(context).size.width*0.7,
+            margin: EdgeInsets.symmetric(horizontal:10),
+              child: TextFormField(decoration: buildSignupInputDecoration('unit price'),
+                   style: TextStyle(
+                 fontSize: 20,
+                fontFamily: 'Montserrat',
+                color: Colors.black,
+               ), 
+          keyboardType: TextInputType.number,
+               validator: (value){
+          return value.isEmpty ? 'enter unit price of item':null; 
+             },
+          onChanged: (value){
+              if(value!=null){
+              this.price = int.parse(value);
+            }
+            else{
+              this.price =0;
+            }
+          },
+          ),
+                )
+                ]
+              )
             )
 
         ]
@@ -182,7 +253,11 @@ void _itemNotSucessfullyAdded() {
                   userIdentity= user.uid;
                   firestoreInstance.runTransaction((Transaction transaction) async{  
                    CollectionReference reference = firestoreInstance.collection('users').doc(userIdentity).collection('stockList');
-                await reference.add({"item":productName.toString(), "quantity":quantity});
+                await reference.add({
+                "item":productName.toString(),
+                 "quantity":quantity,
+                 "price":price,
+                 });
             });
                });            
                 _itemSucessfullyAdded();
@@ -215,7 +290,7 @@ return InputDecoration(
 
 }
 
-Container container (TextFormField child){
+Container container (Row child){
 return Container(
         margin: EdgeInsets.symmetric(horizontal:20),
                 child: Material(
@@ -230,8 +305,8 @@ return Container(
 
 Container flatbutton (FlatButton child){
 return Container(
-  margin: EdgeInsets.symmetric(horizontal:20),
-  width: MediaQuery.of(context).size.width*0.6,
+  margin: EdgeInsets.symmetric(horizontal:10),
+  width: 100,
                 child: Material(
                   borderRadius: BorderRadius.circular(5),
                   shadowColor: Colors.grey,

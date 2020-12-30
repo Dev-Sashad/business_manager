@@ -86,7 +86,7 @@ void _loadingDialog() {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Password successfully changed"),
-          content: new Text("Thank you"),
+          content: new Text("Thank you", textAlign: TextAlign.center),
           actions: <Widget>[
             flatbutton(
             FlatButton(
@@ -156,6 +156,7 @@ void initState() {
   Widget build(BuildContext context) {
    return Scaffold(
           appBar: AppBar(
+             elevation: 0.0,
             automaticallyImplyLeading: false,
         leading: IconButton(icon: Icon(Icons.arrow_back_ios),
         

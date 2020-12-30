@@ -22,7 +22,7 @@ class _SellStockState extends State<Sellstock> {
  var selectedItem, newDateTime; //, newTime;
  int index ,actualQuantity;
  String itemName;
- int price,actualPrice=0;
+ int price = 0, quantity, newprice = 0;
 
  //var newDate= DatePickerEntryMode.calendar;
  //var newTime= TimeOfDayFormat.HH_colon_mm;
@@ -49,19 +49,34 @@ class _SellStockState extends State<Sellstock> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Your sale was successful"),
-          content: new Text("Thank you"),
+          title: new Text("Your sale was successful. Thank you", textAlign: TextAlign.center),
+          content: new Text("Would you like to make another sale?\nClick OK", textAlign: TextAlign.center),
           actions: <Widget>[
-            flatbutton(
-             FlatButton(
-              child: new Text("Dismiss", style: TextStyle(fontSize:20, color:Colors.white),),
+           Row(
+              children:[
+                Align(
+                  alignment:Alignment.bottomLeft,
+                  child:   flatbutton(
+            FlatButton(
+              child: new Text("goto home", style: TextStyle(fontSize:20, color:Colors.white),),
               onPressed: () {             
-               //authFormType = AuthFormType.signIn;
+             
               Navigator.of(context).pushReplacement(
     MaterialPageRoute(builder: (BuildContext context)=>HomePage())
   );
-             },
-            ),
+               // loading=false;
+              },),)),
+
+               Align(
+                  alignment:Alignment.bottomRight,
+                  child:   flatbutton(
+            FlatButton(
+              child: new Text("Ok", style: TextStyle(fontSize:20, color:Colors.white),),
+              onPressed: () {             
+                    Navigator.pop(context);
+              },),)),
+         
+              ]
             )
           ],
         );
@@ -121,6 +136,7 @@ String stockValidator(String value) {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+         elevation: 0.0,
         backgroundColor: Colors.orangeAccent,
         title: 
           Text('Sell Stock',textAlign:TextAlign.center, 
@@ -128,21 +144,11 @@ String stockValidator(String value) {
         centerTitle: true,
       ),
 
-      body: LayoutBuilder(
-         
-         builder: (ctx, constrains){
-           return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-           //image: DecorationImage(
-           // image: AssetImage("assets/background.png"),
-           // fit: BoxFit.cover,
-         // ),
+      body: SingleChildScrollView(
+  child: Container(
+     decoration: BoxDecoration(
          color:  Colors.white
         ),
-        height: constrains.maxHeight,
-        child:SingleChildScrollView(
-  child: Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
   child: Padding(
@@ -157,75 +163,42 @@ String stockValidator(String value) {
       Text('Available Quantity', style:TextStyle(color: Colors.black, fontWeight:FontWeight.bold,fontSize:20)),
        SizedBox(height: 10,),
 
-       Container(
-        padding: EdgeInsets.symmetric(vertical:5, horizontal: 10),
-        width: MediaQuery.of(context).size.width*0.7,
-        height: 60,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.orangeAccent,
-            width: 2.0,
-          ),
-          borderRadius: BorderRadius.circular(7)
-          
-        ),
-
-        child: Text(itemQuantity.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize:30,),
+       design(
+         child: Material(
+            color:Colors.white,
+        child: Text(itemQuantity.toString(), style: TextStyle(fontSize:30,),
         textAlign: TextAlign.center,
-      ), 
+      ),
+         ) 
       ),
 
       SizedBox(height:20),
-           
-           Container(
-             decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.orangeAccent,
-            width: 2.0,
-          ),
-          borderRadius: BorderRadius.circular(7)
-          
-        ),
-             alignment: Alignment.center,
-             width: MediaQuery.of(context).size.width*0.7,
-             height: 60,
-             child:TextFormField( 
-                 style: TextStyle(
-                 fontSize: 30,
-                 fontWeight: FontWeight.bold,
-                fontFamily: 'Montserrat',
-                color: Colors.black,
-               ), 
-          keyboardType: TextInputType.number,
-        decoration: buildSignupInputDecoration('enter quantity to sell'),
-          validator: stockValidator,
-        textAlign: TextAlign.center,
+      Text('Unit Price', style:TextStyle(color: Colors.black, fontWeight:FontWeight.bold,fontSize:20)),
+       SizedBox(height: 10,),
 
-        onChanged: (newQuantity){
-          setState(() {
-            actualQuantity= int.parse(newQuantity);
-          });
-              
-        },
-        
-        ),),
+       design(
+         child: Material(
+           color:Colors.white,
+        child: Text('₦ ${price.toString()}', style: TextStyle(fontSize:30,),
+        textAlign: TextAlign.center,
+      ),
+         ) 
+      ),
       
       SizedBox(height:20),
 
-      Text('Price', style:TextStyle(color: Colors.black, fontWeight:FontWeight.bold, fontSize: 20)),
+      Text('Purchase Quantity', style:TextStyle(color: Colors.black, fontWeight:FontWeight.bold, fontSize: 20)),
 
    SizedBox(height:15),
-
      
            Row(
              mainAxisSize: MainAxisSize.max,
              
              mainAxisAlignment:MainAxisAlignment.center,
            children: <Widget>[
-             _conatiner(price=50 ),
-             _conatiner(price=100),
-             _conatiner(price=200),
+             _conatiner(quantity=5 ),
+             _conatiner(quantity=10),
+             _conatiner(quantity=20),
            ],),
 
            SizedBox(height:15),
@@ -235,65 +208,57 @@ String stockValidator(String value) {
            
              mainAxisAlignment:MainAxisAlignment.center,
            children: <Widget>[
-             _conatiner(price=500),
-             _conatiner(price=1000),
-             _conatiner(price=2000),
+             _conatiner(quantity=50),
+             _conatiner(quantity=100),
+             _conatiner(quantity=200),
            ],),
-     
-     SizedBox(height:30),
 
-     Container ( 
-      alignment: Alignment.center,
-       height: 60,
-       padding: EdgeInsets.symmetric(vertical:10),
-        width: MediaQuery.of(context).size.width*0.7,
-
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.greenAccent,
-            width: 2.0,
-          ),
-          borderRadius: BorderRadius.circular(7)
-          
-        ),
-        child:Row(
-          
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
+             SizedBox(height:10),
            
-           Container(
-             width: MediaQuery.of(context).size.width*0.5,
-             child: TextFormField(  
-                style: TextStyle(
+           design(
+             child:Material(
+                color:Colors.white,
+             child:TextFormField( 
+                 style: TextStyle(
                  fontSize: 30,
-                 fontWeight: FontWeight.bold,
                 fontFamily: 'Montserrat',
                 color: Colors.black,
                ), 
           keyboardType: TextInputType.number,
-
-        decoration: InputDecoration(
-          border: InputBorder.none,
-      contentPadding: const EdgeInsets.symmetric(horizontal:10, vertical:7),
-        hintText: actualPrice.toString(),
-        hintStyle: TextStyle(color:Colors.grey , fontSize:30,),
-        prefixIcon: Image.asset('assets/naira.png', ),
-        ),
-        validator: stockValidator,
+        decoration: buildSignupInputDecoration((actualQuantity != null)? actualQuantity.toString():'0'),
+          validator: stockValidator,
         textAlign: TextAlign.center,
-        onChanged: (newPrice){
 
+        onChanged: (newQuantity){
           setState(() {
-            actualPrice= int.parse(newPrice);
-          });            
-        },   
-        ),
-           ),
+            actualQuantity= int.parse(newQuantity);
+          });
+            if(newQuantity != null){
+                newprice = price * actualQuantity;
+            }
 
-        SizedBox(width:10),
+            else{
+                 newprice = price * 1; 
+            }      
+        },
+        ),
+           )
+           ),
+     
+     SizedBox(height:30),
+
+        design ( 
+            child: Material(
+           color:Colors.white,
+        child:Row(   
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+        Image.asset('assets/naira.png'),
+          
+        Text((newprice != null)? newprice.toString():'0', style: TextStyle( color:Colors.black, fontSize: 30),),
 
         InkWell(onTap: (){
-if (selectedItem==null || actualPrice<=0 || actualQuantity<=0 || actualQuantity > itemQuantity){
+if (selectedItem==null || actualQuantity<=0 || actualQuantity > itemQuantity){
               _salesNotSucessful();
           }
 
@@ -318,7 +283,7 @@ if (selectedItem==null || actualPrice<=0 || actualQuantity<=0 || actualQuantity 
 
   {
     "Item" : selectedItem,
-    "Price": actualPrice,
+    "Price": newprice,
     "Quantity_sold": actualQuantity,
     "Date": newDateTime,
     //"Time": newTime,
@@ -340,33 +305,47 @@ if (selectedItem==null || actualPrice<=0 || actualQuantity<=0 || actualQuantity 
 
          
         ],
-      ),)
+      ),
+      )
+        )
 
    ],)
    )
   ) 
   ),
-  )
-  );})
     );
   }
 
-  FlatButton _conatiner(price){
+  FlatButton _conatiner(quantity){
     return FlatButton(
       child:Container(
        height: 70,
       width: 80,
       alignment: Alignment.center,
-      child: Text(price.toString(), style: TextStyle(fontSize:20, fontWeight: FontWeight.bold,
+      child: Text(quantity.toString(), style: TextStyle(fontSize:20, fontWeight: FontWeight.bold,
       color: Colors.black), textAlign: TextAlign.center,),
       decoration: BoxDecoration(
+        color:Colors.white,
         border: Border.all(width:1.0, color:Colors.orangeAccent),
-        borderRadius: BorderRadius.circular(10)
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius:4
+          )
+        ]
       ),
       ),
       onPressed: () {
         setState(() {
-            actualPrice= price;
+            actualQuantity= quantity;
+             if(actualQuantity != null){
+                newprice = price * actualQuantity;
+            }
+
+            else{
+                 newprice = price * 1;
+            }
         });
     
       },
@@ -403,7 +382,7 @@ if (selectedItem==null || actualPrice<=0 || actualQuantity<=0 || actualQuantity 
                    ),
                 child: Theme(
             data: Theme.of(context).copyWith(
-              canvasColor: Colors.orangeAccent[100], // background color for the dropdown items
+              canvasColor: Colors.orange[50], // background color for the dropdown items
               buttonTheme: ButtonTheme.of(context).copyWith(
                 alignedDropdown: true,  //If false (the default), then the dropdown's menu will be wider than its button.
               )
@@ -429,6 +408,7 @@ if (selectedItem==null || actualPrice<=0 || actualQuantity<=0 || actualQuantity 
                  print('$index');
                  
                    itemQuantity = sellList.docs[index].data()["quantity"];
+                   price = sellList.docs[index].data()["price"];
                    documentId = sellList.docs[index].id;
                       print('$documentId'); 
                 },
@@ -446,14 +426,51 @@ if (selectedItem==null || actualPrice<=0 || actualQuantity<=0 || actualQuantity 
 
 
      else{
-      return Text('Loading, Please wait...');
+      return Container(
+           child:  Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              
+              children: <Widget>[
+                Icon(Icons.store, size:25, color: Colors.orangeAccent),
+                SizedBox(width:10),
+      
+                    Container(
+                  width: MediaQuery.of(context).size.width*0.6,
+                 height: 50,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                  color: Color(0xFFF2F2F2)
+                   ),
+                child: Theme(
+            data: Theme.of(context).copyWith(
+              canvasColor: Colors.orange[50], // background color for the dropdown items
+              buttonTheme: ButtonTheme.of(context).copyWith(
+                alignedDropdown: true,  //If false (the default), then the dropdown's menu will be wider than its button.
+              )
+            ),
+            child: DropdownButtonHideUnderline(
+
+                child: DropdownButton(
+                iconSize: 30,
+                isExpanded: false,
+                hint: Text('select stock', style: TextStyle(color: Colors.black)),
+                onChanged: (value) {  },
+                items: [],
+                ),
+                ),
+                )
+                )
+              ]
+           )
+      );
     }
     
   }
 
 Container flatbutton (FlatButton child){
 return Container(
-  margin: EdgeInsets.symmetric(horizontal:20),
+  width: 100,
+  margin: EdgeInsets.symmetric(horizontal:10),
                 child: Material(
                   borderRadius: BorderRadius.circular(5),
                   shadowColor: Colors.grey,
@@ -468,13 +485,32 @@ return Container(
 return InputDecoration(
      hintText: hint,
      hintStyle: TextStyle( 
-     fontSize: 15,
+     fontSize: 30,
       fontFamily: 'Montserrat',
-      color: Colors.grey,
+      color: Colors.black,
       ),     
       border: InputBorder.none
       );
 
 }
+
+Container design ({ Material child}){
+  return   Container(
+        padding: EdgeInsets.symmetric(vertical:5, horizontal: 10),
+        width: MediaQuery.of(context).size.width*0.7,
+        height: 60,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.orangeAccent,
+            width: 2.0,
+          ),
+          borderRadius: BorderRadius.circular(7)
+          
+        ),
+
+        child: child 
+      );
+    }
   
 }

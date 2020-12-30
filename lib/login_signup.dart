@@ -3,10 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:records/homepage.dart';
-import 'package:records/loading.dart';
 import 'package:records/services/authentication.dart';
-
- 
 
 
 enum AuthFormType {
@@ -350,11 +347,11 @@ void _showVerifyEmailSentDialog() {
 if (validate()){
     await auth.signUp(_email, _password).then((value) {
             _loadingDialog();
-            User user= FirebaseAuth.instance.currentUser;  
-              user.sendEmailVerification();
+            User user= FirebaseAuth.instance.currentUser;
+              user.updateProfile( displayName: userName).then((value) => user.sendEmailVerification() );  
               userIdentity= user.uid;
                print('Signed up user: $userIdentity');
-            
+              
              checkSession().then((value){         
              FirebaseFirestore.instance.collection('users').doc(userIdentity).
              set({'email':_email, 'username':userName, 'password':_password});
@@ -401,7 +398,7 @@ else {
 
              else{  
                  checkSession().then((event) async {
-              Navigator.of(context).pushReplacement(
+              Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (BuildContext context)=>HomePage())
            );
                 });
@@ -429,7 +426,7 @@ else {
  
   @override
   Widget build(BuildContext context) {
-    return loading? Loading() :  Scaffold(
+    return Scaffold(
        body: LayoutBuilder(
          builder: (ctx, constrains){
            return Scaffold(
@@ -437,6 +434,9 @@ else {
         height: constrains.maxHeight,
         child:SingleChildScrollView(
   child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white
+              ),
                     height: MediaQuery.of(context).size.height,
                     width: MediaQuery.of(context).size.width,               
                     child: Column(
@@ -449,11 +449,11 @@ else {
                     decoration: BoxDecoration(
                     gradient: LinearGradient(
                 begin: Alignment.topCenter,
-               colors: [
-                  Colors.orangeAccent[200],
+                 colors: [
+                 Colors.orangeAccent[200],
                 Colors.orangeAccent,
                 Colors.orangeAccent[100],
-               ]
+               ],
               ),             
                borderRadius: BorderRadius.only( bottomRight: Radius.circular(50)),
                               ),
@@ -494,8 +494,8 @@ else {
       ),
        ),
 
-       BottomAppBar(
-             
+                  Align(
+                      alignment: Alignment.bottomCenter,   
        child: Padding(
                padding: const EdgeInsets.symmetric(horizontal:0),
 
@@ -574,6 +574,7 @@ TextFormField(
   return this.userName = value;
 
    }
+   
 ),  
 );
 
@@ -646,9 +647,9 @@ return InputDecoration(
       ),
      // fillColor: Colors.white,
      // focusColor: Colors.white,
-      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:1.0), 
-      borderRadius: BorderRadius.circular(10),),
-      contentPadding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
+       enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:1.0), 
+      borderRadius: BorderRadius.circular(5),),
+      //contentPadding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
       );
 
 }
